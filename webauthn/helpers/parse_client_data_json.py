@@ -19,6 +19,9 @@ def parse_client_data_json(val: bytes) -> CollectedClientData:
     except JSONDecodeError:
         raise InvalidJSONStructure("Unable to decode clientDataJSON bytes as JSON")
 
+    if type(json_dict) is not dict:
+        raise InvalidJSONStructure("clientDataJSON was not a dict")
+
     # Ensure required values are present in client data
     if "type" not in json_dict:
         raise InvalidJSONStructure('clientDataJSON missing required property "type"')
