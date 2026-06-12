@@ -33,7 +33,6 @@ from webauthn.helpers.exceptions import (
     InvalidRegistrationResponse,
 )
 from webauthn.helpers.known_root_certs import (
-    google_hardware_attestation_root_1,
     google_hardware_attestation_root_2,
     google_hardware_attestation_root_3,
     google_hardware_attestation_root_4,
@@ -90,8 +89,7 @@ def verify_android_key(
     except InvalidCertificateChain as err:
         raise InvalidRegistrationResponse(f"{err} (Android Key)")
 
-    # Make sure the root cert is one of these
-    pem_root_certs_bytes.append(google_hardware_attestation_root_1)
+    # Make sure the root cert is one of these:
     pem_root_certs_bytes.append(google_hardware_attestation_root_2)
     pem_root_certs_bytes.append(google_hardware_attestation_root_3)
     pem_root_certs_bytes.append(google_hardware_attestation_root_4)

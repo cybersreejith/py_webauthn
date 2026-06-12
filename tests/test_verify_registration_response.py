@@ -15,7 +15,7 @@ from webauthn.helpers.exceptions import (
     InvalidRegistrationResponse,
     InvalidJSONStructure,
 )
-from webauthn.helpers.known_root_certs import globalsign_r2
+from webauthn.helpers.known_root_certs import globalsign_root_ca
 from webauthn.helpers.structs import (
     AttestationFormat,
     PublicKeyCredentialType,
@@ -216,7 +216,7 @@ class TestVerifyRegistrationResponse(TestCase):
                 expected_rp_id=rp_id,
                 pem_root_certs_bytes_by_fmt={
                     # This root cert is actually for android-safetynet
-                    AttestationFormat.PACKED: [globalsign_r2]
+                    AttestationFormat.PACKED: [globalsign_root_ca]
                 },
             )
 
