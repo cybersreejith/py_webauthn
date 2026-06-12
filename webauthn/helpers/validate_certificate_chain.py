@@ -1,7 +1,12 @@
 from typing import List, Optional
 
-from cryptography.x509 import load_der_x509_certificate
-from OpenSSL.crypto import X509, X509Store, X509StoreContext, X509StoreContextError
+from OpenSSL.crypto import (
+    X509Store,
+    X509StoreContext,
+    X509StoreContextError,
+    load_certificate,
+    FILETYPE_ASN1,
+)
 
 from .exceptions import InvalidCertificateChain
 from .pem_cert_bytes_to_open_ssl_x509 import pem_cert_bytes_to_open_ssl_x509
@@ -33,8 +38,7 @@ def validate_certificate_chain(
     # Prepare leaf cert
     try:
         leaf_cert_bytes = x5c[0]
-        leaf_cert_crypto = load_der_x509_certificate(leaf_cert_bytes)
-        leaf_cert = X509().from_cryptography(leaf_cert_crypto)
+        leaf_cert = load_certificate(FILETYPE_ASN1, leaf_cert_bytes)
     except Exception as exc:
         raise InvalidCertificateChain(
             "Could not prepare leaf cert. See __cause__ for more info"
@@ -44,10 +48,9 @@ def validate_certificate_chain(
     try:
         # May be an empty array, that's fine
         intermediate_certs_bytes = x5c[1:]
-        intermediate_certs_crypto = [
-            load_der_x509_certificate(cert) for cert in intermediate_certs_bytes
+        intermediate_certs = [
+            load_certificate(FILETYPE_ASN1, cert) for cert in intermediate_certs_bytes
         ]
-        intermediate_certs = [X509().from_cryptography(cert) for cert in intermediate_certs_crypto]
     except Exception as exc:
         raise InvalidCertificateChain(
             "Could not prepare intermediate certs. See __cause__ for more info"
