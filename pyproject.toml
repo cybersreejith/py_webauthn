@@ -44,4 +44,5 @@ version = { attr = "webauthn.__version__" }
 dev = [
     "black>=26.5.1",
     "mypy>=2.1.0",
+    "pyflakes>=3.4.0",
 ]
