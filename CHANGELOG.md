@@ -9,7 +9,7 @@
 - Two expired trust anchors have been retired ([#279](https://github.com/duo-labs/py_webauthn/pull/279))
 - A new trust anchor for `"android-key"` attestation has been added ([#268](https://github.com/duo-labs/py_webauthn/pull/268))
 - TPM manufacturer IDs are now normalized during `"tpm"` attestation verification to prevent casing-related lookup issues ([#275](https://github.com/duo-labs/py_webauthn/pull/275))
-- More exceptions are more gracefully handled ([#271](https://github.com/duo-labs/py_webauthn/pull/271), [#273](https://github.com/duo-labs/py_webauthn/pull/273), [#276](https://github.com/duo-labs/py_webauthn/pull/276))
+- Registration verification will more consistently raise `webauthn.helpers.exceptions.InvalidRegistrationResponse` when encountering bad data. Likewise, authentication verification will more consistently raise `webauthn.helpers.exceptions.InvalidAuthenticationResponse` when encountering bad data ([#271](https://github.com/duo-labs/py_webauthn/pull/271), [#273](https://github.com/duo-labs/py_webauthn/pull/273), [#276](https://github.com/duo-labs/py_webauthn/pull/276), [#280](https://github.com/duo-labs/py_webauthn/pull/280))
 - A docstring typo in `verify_authentication_response()` has been fixed ([#266](https://github.com/duo-labs/py_webauthn/pull/266), h/t @Densaugeo)
 
 ## v2.7.1
