@@ -339,6 +339,7 @@ class AuthenticatorAttestationResponse:
         `client_data_json`: Information the authenticator collects about the client/browser it communicates with
         `attestation_object`: Encoded information about an attestation
         (optional) `transports`: The authenticator's supported methods of communication with a client/browser
+        (optional) `client_extension_results`: Extension results returned by the browser for the registration ceremony
 
     https://www.w3.org/TR/webauthn-2/#authenticatorattestationresponse
     """
@@ -347,6 +348,7 @@ class AuthenticatorAttestationResponse:
     attestation_object: bytes
     # Optional in L2, but becomes required in L3. Play it safe until L3 becomes Recommendation
     transports: Optional[List[AuthenticatorTransport]] = None
+    client_extension_results: Optional[dict] = None
 
 
 @dataclass
@@ -509,6 +511,7 @@ class AuthenticatorAssertionResponse:
         `authenticator_data`: Contextual information provided by authenticator
         `signature`: A byte sequence signed by the authenticator's private key, to be verified with a user's public key
         (optional) `user_handle`: The user ID specified for the user during attestation
+        (optional) `client_extension_results`: Extension results returned by the browser for the authentication ceremony
 
     https://www.w3.org/TR/webauthn-2/#authenticatorassertionresponse
     """
@@ -517,6 +520,7 @@ class AuthenticatorAssertionResponse:
     authenticator_data: bytes
     signature: bytes
     user_handle: Optional[bytes] = None
+    client_extension_results: Optional[dict] = None
 
 
 @dataclass

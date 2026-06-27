@@ -24,6 +24,44 @@ The library exposes just a few core methods on the root `webauthn` module:
 - `generate_authentication_options()`
 - `verify_authentication_response()`
 
+### Optional extension support
+
+WebAuthn extensions are supported as an optional, backward-compatible feature. If you need to request extension behavior during registration or authentication, pass an `extensions` dictionary to the option generators.
+
+```python
+from webauthn import generate_registration_options, generate_authentication_options
+
+registration_options = generate_registration_options(
+    rp_id="example.com",
+    rp_name="Example Co",
+    user_name="bob",
+    extensions={
+        "credProps": True,
+        "credProtect": {"credentialProtectionPolicy": 3},
+        "uvm": True,
+        "largeBlob": {"supported": True},
+        "hmac-secret": {"enabled": True},
+        "prf": {"enabled": True},
+        "appid": True,
+    },
+)
+
+authentication_options = generate_authentication_options(
+    rp_id="example.com",
+    extensions={
+        "credProps": True,
+        "credProtect": {"credentialProtectionPolicy": 3},
+        "uvm": True,
+        "largeBlob": {"supported": True},
+        "hmac-secret": {"enabled": True},
+        "prf": {"enabled": True},
+        "appid": True,
+    },
+)
+```
+
+When browser responses include extension results, they are parsed and exposed on the verified registration/authentication objects via `extensions`. If no extension data is present, the value remains `None` and existing callers are unaffected.
+
 Two additional helper methods are also exposed:
 
 - `options_to_json()`

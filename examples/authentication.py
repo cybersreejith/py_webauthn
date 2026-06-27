@@ -25,6 +25,24 @@ simple_authentication_options = generate_authentication_options(rp_id="example.c
 print("\n[Authentication Options - Simple]")
 print(options_to_json(simple_authentication_options))
 
+# Optional extension-aware options
+extension_authentication_options = generate_authentication_options(
+    rp_id="example.com",
+    challenge=b"1234567890",
+    extensions={
+        "credProps": True,
+        "credProtect": {"credentialProtectionPolicy": 3},
+        "uvm": True,
+        "largeBlob": {"supported": True},
+        "hmac-secret": {"enabled": True},
+        "prf": {"enabled": True},
+        "appid": True,
+    },
+)
+
+print("\n[Authentication Options - Extensions]")
+print(options_to_json(extension_authentication_options))
+
 # Complex Options
 complex_authentication_options = generate_authentication_options(
     rp_id="example.com",

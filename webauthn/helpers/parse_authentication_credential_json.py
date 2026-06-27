@@ -52,6 +52,12 @@ def parse_authentication_credential_json(
     if not isinstance(response_signature, str):
         raise InvalidJSONStructure("Credential response missing required signature")
 
+    response_client_extension_results = cred_response.get("clientExtensionResults")
+    if response_client_extension_results is not None and not isinstance(
+        response_client_extension_results, dict
+    ):
+        raise InvalidJSONStructure("Credential response had unexpected clientExtensionResults")
+
     cred_type = json_val.get("type")
     try:
         # Simply try to get the single matching Enum. We'll set the literal value below assuming
@@ -90,6 +96,7 @@ def parse_authentication_credential_json(
                 authenticator_data=base64url_to_bytes(response_authenticator_data),
                 signature=base64url_to_bytes(response_signature),
                 user_handle=response_user_handle,
+                client_extension_results=response_client_extension_results,
             ),
             authenticator_attachment=cred_authenticator_attachment,
             type=PublicKeyCredentialType.PUBLIC_KEY,

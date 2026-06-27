@@ -49,6 +49,12 @@ def parse_registration_credential_json(
     if not isinstance(response_attestation_object, str):
         raise InvalidJSONStructure("Credential response missing required attestationObject")
 
+    response_client_extension_results = cred_response.get("clientExtensionResults")
+    if response_client_extension_results is not None and not isinstance(
+        response_client_extension_results, dict
+    ):
+        raise InvalidJSONStructure("Credential response had unexpected clientExtensionResults")
+
     cred_type = json_val.get("type")
     try:
         # Simply try to get the single matching Enum. We'll set the literal value below assuming
@@ -87,6 +93,7 @@ def parse_registration_credential_json(
                 client_data_json=base64url_to_bytes(response_client_data_json),
                 attestation_object=base64url_to_bytes(response_attestation_object),
                 transports=transports,
+                client_extension_results=response_client_extension_results,
             ),
             authenticator_attachment=cred_authenticator_attachment,
             type=PublicKeyCredentialType.PUBLIC_KEY,

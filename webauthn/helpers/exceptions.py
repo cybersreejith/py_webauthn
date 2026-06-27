@@ -72,3 +72,7 @@ class InvalidCBORData(WebAuthnException):
 
 class InvalidAttestationObjectStructure(WebAuthnException):
     pass
+
+
+class InvalidExtensionResults(WebAuthnException):
+    pass

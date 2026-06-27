@@ -30,6 +30,25 @@ simple_registration_options = generate_registration_options(
 print("\n[Registration Options - Simple]")
 print(options_to_json(simple_registration_options))
 
+# Optional extension-aware options
+extension_registration_options = generate_registration_options(
+    rp_id="example.com",
+    rp_name="Example Co",
+    user_name="extension-user",
+    extensions={
+        "credProps": True,
+        "credProtect": {"credentialProtectionPolicy": 3},
+        "uvm": True,
+        "largeBlob": {"supported": True},
+        "hmac-secret": {"enabled": True},
+        "prf": {"enabled": True},
+        "appid": True,
+    },
+)
+
+print("\n[Registration Options - Extensions]")
+print(options_to_json(extension_registration_options))
+
 # Complex Options
 complex_registration_options = generate_registration_options(
     rp_id="example.com",

@@ -23,6 +23,7 @@ from webauthn.helpers.structs import (
     PublicKeyCredentialType,
     TokenBindingStatus,
 )
+from webauthn.extensions import parse_client_extension_results
 
 
 @dataclass
@@ -36,6 +37,7 @@ class VerifiedAuthentication:
     credential_device_type: CredentialDeviceType
     credential_backed_up: bool
     user_verified: bool
+    extensions: Any = None
 
 
 expected_token_binding_statuses = [
@@ -185,6 +187,9 @@ def verify_authentication_response(
         raise InvalidAuthenticationResponse("Could not verify authentication signature")
 
     parsed_backup_flags = parse_backup_flags(auth_data.flags)
+    parsed_extensions = parse_client_extension_results(
+        getattr(response, "client_extension_results", None)
+    )
 
     return VerifiedAuthentication(
         credential_id=credential.raw_id,
@@ -192,4 +197,5 @@ def verify_authentication_response(
         credential_device_type=parsed_backup_flags.credential_device_type,
         credential_backed_up=parsed_backup_flags.credential_backed_up,
         user_verified=auth_data.flags.uv,
+        extensions=parsed_extensions,
     )

@@ -29,6 +29,7 @@ from .formats.fido_u2f import verify_fido_u2f
 from .formats.packed import verify_packed
 from .formats.tpm import verify_tpm
 from .generate_registration_options import default_supported_pub_key_algs
+from webauthn.extensions import parse_client_extension_results
 
 
 @dataclass
@@ -56,6 +57,7 @@ class VerifiedRegistration:
     attestation_object: bytes
     credential_device_type: CredentialDeviceType
     credential_backed_up: bool
+    extensions: Optional[Any] = None
 
 
 expected_token_binding_statuses = [
@@ -288,6 +290,9 @@ def verify_registration_response(
         raise InvalidRegistrationResponse("Attestation statement could not be verified")
 
     parsed_backup_flags = parse_backup_flags(auth_data.flags)
+    parsed_extensions = parse_client_extension_results(
+        getattr(response, "client_extension_results", None)
+    )
 
     return VerifiedRegistration(
         credential_id=attested_credential_data.credential_id,
@@ -300,4 +305,5 @@ def verify_registration_response(
         attestation_object=attestation_object_bytes,
         credential_device_type=parsed_backup_flags.credential_device_type,
         credential_backed_up=parsed_backup_flags.credential_backed_up,
+        extensions=parsed_extensions,
     )
