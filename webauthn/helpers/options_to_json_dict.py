@@ -93,6 +93,9 @@ def options_to_json_dict(
         if options.hints is not None:
             reg_to_return["hints"] = [hint.value for hint in options.hints]
 
+        if options.extensions is not None:
+            reg_to_return["extensions"] = options.extensions
+
         return reg_to_return
 
     if isinstance(options, PublicKeyCredentialRequestOptions):
@@ -125,6 +128,9 @@ def options_to_json_dict(
 
         if options.user_verification:
             auth_to_return["userVerification"] = options.user_verification.value
+
+        if options.extensions is not None:
+            auth_to_return["extensions"] = options.extensions
 
         return auth_to_return
 

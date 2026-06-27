@@ -54,6 +54,7 @@ def generate_registration_options(
     exclude_credentials: Optional[List[PublicKeyCredentialDescriptor]] = None,
     supported_pub_key_algs: Optional[List[COSEAlgorithmIdentifier]] = None,
     hints: Optional[List[PublicKeyCredentialHint]] = None,
+    extensions: Optional[dict] = None,
 ) -> PublicKeyCredentialCreationOptions:
     """Generate options for registering a credential via navigator.credentials.create()
 
@@ -69,6 +70,7 @@ def generate_registration_options(
         (optional) `authenticator_selection`: Require certain characteristics about an authenticator, like attachment, support for resident keys, user verification, etc...
         (optional) `exclude_credentials`: A list of credentials the user has previously registered so that they cannot re-register them.
         (optional) `supported_pub_key_algs`: A list of public key algorithm IDs the RP chooses to restrict support to. Defaults to all supported algorithm IDs.
+        (optional) `extensions`: WebAuthn extension values to include in the registration options payload.
 
     Returns:
         Registration options ready for the browser. Consider using `helpers.options_to_json()` in this library to quickly convert the options to JSON.
@@ -126,6 +128,7 @@ def generate_registration_options(
         exclude_credentials=exclude_credentials,
         attestation=attestation,
         hints=hints,
+        extensions=extensions,
     )
 
     ########

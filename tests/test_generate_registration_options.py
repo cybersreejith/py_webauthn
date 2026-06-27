@@ -47,6 +47,15 @@ class TestGenerateRegistrationOptions(TestCase):
         assert options.authenticator_selection is None
         assert options.attestation == AttestationConveyancePreference.NONE
 
+    def test_does_not_add_extensions_by_default(self) -> None:
+        options = generate_registration_options(
+            rp_id="example.com",
+            rp_name="Example Co",
+            user_name="lee",
+        )
+
+        assert options.extensions is None
+
     def test_generates_options_with_custom_values(self) -> None:
         user_id = "ABAV6QWPBEY9WOTOA1A4".encode("utf-8")
 
@@ -67,6 +76,7 @@ class TestGenerateRegistrationOptions(TestCase):
             ],
             supported_pub_key_algs=[COSEAlgorithmIdentifier.ECDSA_SHA_512],
             timeout=120000,
+            extensions={"credProps": {"rk": True}},
         )
 
         assert options.rp == PublicKeyCredentialRpEntity(id="example.com", name="Example Co")
@@ -88,6 +98,7 @@ class TestGenerateRegistrationOptions(TestCase):
             require_resident_key=True,
         )
         assert options.attestation == AttestationConveyancePreference.DIRECT
+        assert options.extensions == {"credProps": {"rk": True}}
 
     def test_raises_on_empty_rp_id(self) -> None:
         with self.assertRaisesRegex(ValueError, "rp_id"):

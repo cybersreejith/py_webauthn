@@ -40,6 +40,7 @@ class TestWebAuthnOptionsToJSON(TestCase):
                 PublicKeyCredentialHint.CLIENT_DEVICE,
                 PublicKeyCredentialHint.HYBRID,
             ],
+            extensions={"credProps": {"rk": True}},
         )
 
         output = options_to_json_dict(options)
@@ -65,6 +66,7 @@ class TestWebAuthnOptionsToJSON(TestCase):
                 },
                 "attestation": "direct",
                 "hints": ["security-key", "client-device", "hybrid"],
+                "extensions": {"credProps": {"rk": True}},
             },
         )
 
@@ -77,6 +79,7 @@ class TestWebAuthnOptionsToJSON(TestCase):
             ],
             timeout=120000,
             user_verification=UserVerificationRequirement.DISCOURAGED,
+            extensions={"credProtect": 1},
         )
 
         output = options_to_json_dict(options)
@@ -89,6 +92,7 @@ class TestWebAuthnOptionsToJSON(TestCase):
                 "allowCredentials": [{"type": "public-key", "id": "MTIzNDU2Nzg5MA"}],
                 "timeout": 120000,
                 "userVerification": "discouraged",
+                "extensions": {"credProtect": 1},
             },
         )
 
@@ -101,6 +105,7 @@ class TestWebAuthnOptionsToJSON(TestCase):
             ],
             timeout=120000,
             user_verification=UserVerificationRequirement.DISCOURAGED,
+            extensions={"credProtect": 1},
         )
 
         # Return a representation with the bytes left as-is
@@ -114,5 +119,6 @@ class TestWebAuthnOptionsToJSON(TestCase):
                 "allowCredentials": [{"type": "public-key", "id": b"1234567890"}],
                 "timeout": 120000,
                 "userVerification": "discouraged",
+                "extensions": {"credProtect": 1},
             },
         )

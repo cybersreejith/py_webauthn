@@ -15,6 +15,7 @@ def generate_authentication_options(
     timeout: int = 60000,
     allow_credentials: Optional[List[PublicKeyCredentialDescriptor]] = None,
     user_verification: UserVerificationRequirement = UserVerificationRequirement.PREFERRED,
+    extensions: Optional[dict] = None,
 ) -> PublicKeyCredentialRequestOptions:
     """Generate options for retrieving a credential via navigator.credentials.get()
 
@@ -24,6 +25,7 @@ def generate_authentication_options(
         (optional) `timeout`: How long in milliseconds the browser should give the user to choose an authenticator. This value is a *hint* and may be ignored by the browser.
         (optional) `allow_credentials`: A list of credentials registered to the user.
         (optional) `user_verification`: The RP's preference for the authenticator's enforcement of the "user verified" flag.
+        (optional) `extensions`: WebAuthn extension values to include in the authentication options payload.
 
     Returns:
         Authentication options ready for the browser. Consider using `helpers.options_to_json()` in this library to quickly convert the options to JSON.
@@ -48,4 +50,5 @@ def generate_authentication_options(
         timeout=timeout,
         allow_credentials=allow_credentials,
         user_verification=user_verification,
+        extensions=extensions,
     )

@@ -314,6 +314,7 @@ class PublicKeyCredentialCreationOptions:
         (optional) `authenticator_selection`: Additional qualities about the authenticators the user can use to complete registration
         (optional) `hints`: Suggestions to the browser about the type of authenticator the user should try and register. Multiple values should be ordered by decreasing preference
         (optional) `attestation`: The Relying Party's desire for a declaration of an authenticator's provenance via attestation statement
+        (optional) `extensions`: WebAuthn extension input values to be included in the registration options
 
     https://www.w3.org/TR/webauthn-2/#dictdef-publickeycredentialcreationoptions
     """
@@ -327,6 +328,7 @@ class PublicKeyCredentialCreationOptions:
     authenticator_selection: Optional[AuthenticatorSelectionCriteria] = None
     hints: Optional[List[PublicKeyCredentialHint]] = None
     attestation: AttestationConveyancePreference = AttestationConveyancePreference.NONE
+    extensions: Optional[dict] = None
 
 
 @dataclass
@@ -483,6 +485,7 @@ class PublicKeyCredentialRequestOptions:
         (optional) `rp_id`: The unique, constant identifier assigned to the Relying Party
         (optional) `allow_credentials`: A list of credentials associated with the user that they can use to complete the authentication
         (optional) `user_verification`: How the authenticator should be capable of determining user identity
+        (optional) `extensions`: WebAuthn extension input values to be included in the authentication options
 
     https://www.w3.org/TR/webauthn-2/#dictionary-assertion-options
     """
@@ -494,6 +497,7 @@ class PublicKeyCredentialRequestOptions:
     user_verification: Optional[UserVerificationRequirement] = (
         UserVerificationRequirement.PREFERRED
     )
+    extensions: Optional[dict] = None
 
 
 @dataclass
