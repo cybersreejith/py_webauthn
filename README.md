@@ -24,6 +24,31 @@ The library exposes just a few core methods on the root `webauthn` module:
 - `generate_authentication_options()`
 - `verify_authentication_response()`
 
+### WebAuthn Extensions
+
+The library supports WebAuthn extensions. Currently implemented: **`credProps`** (determine if credential is a passkey).
+
+```python
+from webauthn.extensions import CredPropsExtension
+
+# Request extension
+options = generate_registration_options(
+    rp_id="example.com",
+    rp_name="Example Co",
+    user_name="bob",
+    extensions=[CredPropsExtension()],
+)
+
+# Check result
+verification = verify_registration_response(...)
+if verification.extensions and verification.extensions.cred_props:
+    if verification.extensions.cred_props.rk:
+        print("Passkey created")
+    else:
+        print("Server-side credential")
+```
+
+
 Two additional helper methods are also exposed:
 
 - `options_to_json()`
