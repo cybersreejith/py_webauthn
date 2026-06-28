@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 import hashlib
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, List, Optional, Union
 
 from cryptography.exceptions import InvalidSignature
 
@@ -23,13 +23,20 @@ from webauthn.helpers.structs import (
     PublicKeyCredentialType,
     TokenBindingStatus,
 )
-from webauthn.extensions import parse_client_extension_results
+from webauthn.extensions import parse_client_extension_results, ClientExtensionResults
 
 
 @dataclass
 class VerifiedAuthentication:
-    """
-    Information about a verified authentication of which an RP can make use
+    """Information about a verified authentication of which an RP can make use.
+
+    Attributes:
+        `credential_id`: The unique credential identifier
+        `new_sign_count`: The updated sign count from the authenticator
+        `credential_device_type`: The type of device (single-device or multi-device)
+        `credential_backed_up`: Whether the credential is backed up
+        `user_verified`: Whether the user was verified by the authenticator
+        `extensions`: Parsed WebAuthn extension results (e.g., credProps)
     """
 
     credential_id: bytes
@@ -37,7 +44,7 @@ class VerifiedAuthentication:
     credential_device_type: CredentialDeviceType
     credential_backed_up: bool
     user_verified: bool
-    extensions: Any = None
+    extensions: Optional[ClientExtensionResults] = None
 
 
 expected_token_binding_statuses = [

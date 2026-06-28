@@ -29,7 +29,7 @@ from .formats.fido_u2f import verify_fido_u2f
 from .formats.packed import verify_packed
 from .formats.tpm import verify_tpm
 from .generate_registration_options import default_supported_pub_key_algs
-from webauthn.extensions import parse_client_extension_results
+from webauthn.extensions import parse_client_extension_results, ClientExtensionResults
 
 
 @dataclass
@@ -45,6 +45,7 @@ class VerifiedRegistration:
         `credential_type`: The literal string "public-key"
         `user_verified`: Whether the user was verified by the authenticator
         `attestation_object`: The raw attestation object for later scrutiny
+        `extensions`: Parsed WebAuthn extension results (e.g., credProps)
     """
 
     credential_id: bytes
@@ -57,7 +58,7 @@ class VerifiedRegistration:
     attestation_object: bytes
     credential_device_type: CredentialDeviceType
     credential_backed_up: bool
-    extensions: Optional[Any] = None
+    extensions: Optional[ClientExtensionResults] = None
 
 
 expected_token_binding_statuses = [
