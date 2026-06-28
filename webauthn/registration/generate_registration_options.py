@@ -13,7 +13,7 @@ from webauthn.helpers.structs import (
     ResidentKeyRequirement,
     PublicKeyCredentialHint,
 )
-from webauthn.extensions.api import build_extension_inputs
+from webauthn.extensions.mapper import build_extension_inputs
 
 
 def _generate_pub_key_cred_params(

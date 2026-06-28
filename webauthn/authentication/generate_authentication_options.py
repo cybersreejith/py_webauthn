@@ -6,7 +6,7 @@ from webauthn.helpers.structs import (
     PublicKeyCredentialRequestOptions,
     UserVerificationRequirement,
 )
-from webauthn.extensions.api import build_extension_inputs
+from webauthn.extensions.mapper import build_extension_inputs
 
 
 def generate_authentication_options(

@@ -37,9 +37,7 @@ extension_registration_options = generate_registration_options(
     rp_name="Example Co",
     user_name="extension-user",
     extensions=[
-        # Developer uses CredPropsExtension(), a helper class that constructs the appropriate
-        # extension input for the browser. The library automatically sends {"credProps": true}
-        # to the browser.
+        # Developer uses CredPropsExtension() & the library automatically converts it to {"credProps": true}
         CredPropsExtension(),
     ],
 )
