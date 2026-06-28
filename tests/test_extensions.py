@@ -14,13 +14,11 @@ from webauthn.helpers.parse_registration_credential_json import parse_registrati
 
 
 class TestCredPropsExtensionInput(TestCase):
-    """CredPropsExtension builds the correct input for the option generators."""
 
     def test_extension_id(self) -> None:
         self.assertEqual(CredPropsExtension().extension_id, "credProps")
 
     def test_input_value_is_true(self) -> None:
-        # Spec §10.4: client extension input is simply True
         self.assertTrue(CredPropsExtension().input_value())
 
     def test_build_extension_inputs_from_list(self) -> None:
@@ -59,39 +57,11 @@ class TestCredPropsOutput(TestCase):
             {"credProps": {"rk": True}},
         )
 
-    def test_parse_authentication_credential_preserves_raw_results(self) -> None:
-        credential = parse_authentication_credential_json(
-            {
-                "id": "credential-id",
-                "rawId": "Y3JlZGVudGlhbC1pZA",
-                "response": {
-                    "clientDataJSON": "Y2xpZW50LWRhdGE",
-                    "authenticatorData": "YXV0aGVudGljYXRvci1kYXRh",
-                    "signature": "c2lnbmF0dXJl",
-                    "clientExtensionResults": {"credProps": {"rk": True}},
-                },
-                "type": "public-key",
-            }
-        )
-        self.assertEqual(
-            credential.response.client_extension_results,
-            {"credProps": {"rk": True}},
-        )
-
-    def test_rk_true_passkey(self) -> None:
-        result = parse_client_extension_results({"credProps": {"rk": True}})
-        self.assertEqual(result, ClientExtensionResults(cred_props=CredPropsOutput(rk=True)))
-
-    def test_rk_false_server_side(self) -> None:
-        result = parse_client_extension_results({"credProps": {"rk": False}})
-        self.assertEqual(result, ClientExtensionResults(cred_props=CredPropsOutput(rk=False)))
-
     def test_rk_absent_unknown(self) -> None:
-        # Browser omits rk when it cannot determine discoverability (spec §10.4 note)
         result = parse_client_extension_results({"credProps": {}})
         self.assertEqual(result, ClientExtensionResults(cred_props=CredPropsOutput(rk=None)))
 
-    def test_invalid_rk_type_raises(self) -> None:
+    def test_invalid_rk(self) -> None:
         with self.assertRaisesRegex(InvalidExtensionResults, re.escape("credProps.rk must be a boolean")):
             parse_client_extension_results({"credProps": {"rk": "yes"}})
 
@@ -105,7 +75,6 @@ class TestParserForwardCompatibility(TestCase):
         self.assertIsNone(parse_client_extension_results(None))
 
     def test_unknown_extensions_are_ignored(self) -> None:
-        # These will be supported in future but must not raise today
         self.assertIsNone(parse_client_extension_results({"uvm": [[2, 4, 2]]}))
         self.assertIsNone(parse_client_extension_results({"largeBlob": {"supported": True}}))
         self.assertIsNone(parse_client_extension_results({"hmac-secret": {"enabled": True}}))

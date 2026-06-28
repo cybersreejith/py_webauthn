@@ -37,10 +37,9 @@ extension_registration_options = generate_registration_options(
     rp_name="Example Co",
     user_name="extension-user",
     extensions=[
-        # CredPropsExtension() requests credProps (spec §10.4).
-        # The library sends {"credProps": true} to the browser automatically.
-        # The browser returns {"rk": true/false/null} which the library parses
-        # into verification.extensions.cred_props.rk after verify_registration_response().
+        # Developer uses CredPropsExtension(), a helper class that constructs the appropriate
+        # extension input for the browser. The library automatically sends {"credProps": true}
+        # to the browser.
         CredPropsExtension(),
     ],
 )
@@ -103,7 +102,8 @@ if registration_verification.extensions is not None:
         # True  = passkey (client-side discoverable)
         # False = server-side credential
         # None  = browser could not determine discoverability
-        print("  credProps.rk (is passkey?):", ext.cred_props.rk)
+        print("Is passkey?):", ext.cred_props.rk)
+        
 assert registration_verification.credential_id == base64url_to_bytes(
     "ZoIKP1JQvKdrYj1bTUPJ2eTUsbLeFkv-X5xJQNr4k6s"
 )
