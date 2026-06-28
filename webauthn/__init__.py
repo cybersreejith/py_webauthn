@@ -8,15 +8,8 @@ from .authentication.verify_authentication_response import (
 )
 from .helpers import base64url_to_bytes, options_to_json
 from .extensions import (
-    AppIdExtension,
     ClientExtensionResults,
-    CredentialPropertiesExtension,
-    CredentialProtectionExtension,
-    CredentialProtectionPolicy,
-    HmacSecretExtension,
-    LargeBlobExtension,
-    PrfExtension,
-    UserVerificationMethod,
+    CredentialPropertiesOutput,
     parse_client_extension_results,
 )
 
@@ -29,14 +22,7 @@ __all__ = [
     "verify_authentication_response",
     "base64url_to_bytes",
     "options_to_json",
-    "AppIdExtension",
     "ClientExtensionResults",
-    "CredentialPropertiesExtension",
-    "CredentialProtectionExtension",
-    "CredentialProtectionPolicy",
-    "HmacSecretExtension",
-    "LargeBlobExtension",
-    "PrfExtension",
-    "UserVerificationMethod",
+    "CredentialPropertiesOutput",
     "parse_client_extension_results",
 ]

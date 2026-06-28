@@ -13,6 +13,7 @@ from webauthn.helpers.structs import (
     ResidentKeyRequirement,
     PublicKeyCredentialHint,
 )
+from webauthn.extensions.api import normalize_extension_inputs
 
 
 def _generate_pub_key_cred_params(
@@ -128,7 +129,7 @@ def generate_registration_options(
         exclude_credentials=exclude_credentials,
         attestation=attestation,
         hints=hints,
-        extensions=extensions,
+        extensions=normalize_extension_inputs(extensions),
     )
 
     ########

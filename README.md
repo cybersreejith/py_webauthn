@@ -24,43 +24,48 @@ The library exposes just a few core methods on the root `webauthn` module:
 - `generate_authentication_options()`
 - `verify_authentication_response()`
 
-### Optional extension support
+### Optional extension support (`credProps`)
 
-WebAuthn extensions are supported as an optional, backward-compatible feature. If you need to request extension behavior during registration or authentication, pass an `extensions` dictionary to the option generators.
+This library supports the **`credProps`** extension (WebAuthn spec §10.4) — the single most important extension for modern passkey deployments.
+
+`credProps` answers the question: **"Is this credential a passkey?"**
+
+The browser returns an `rk` flag in `clientExtensionResults`:
+
+| `rk` value | Meaning |
+|---|---|
+| `True` | Passkey — credential is client-side discoverable (username-less login possible) |
+| `False` | Server-side credential — user must supply a username |
+| `None` | Browser could not determine discoverability |
+
+**Request it at registration time** — input is simply `True`, the spec requires nothing else:
 
 ```python
-from webauthn import generate_registration_options, generate_authentication_options
+from webauthn import generate_registration_options
 
 registration_options = generate_registration_options(
     rp_id="example.com",
     rp_name="Example Co",
     user_name="bob",
-    extensions={
-        "credProps": True,
-        "credProtect": {"credentialProtectionPolicy": 3},
-        "uvm": True,
-        "largeBlob": {"supported": True},
-        "hmac-secret": {"enabled": True},
-        "prf": {"enabled": True},
-        "appid": True,
-    },
-)
-
-authentication_options = generate_authentication_options(
-    rp_id="example.com",
-    extensions={
-        "credProps": True,
-        "credProtect": {"credentialProtectionPolicy": 3},
-        "uvm": True,
-        "largeBlob": {"supported": True},
-        "hmac-secret": {"enabled": True},
-        "prf": {"enabled": True},
-        "appid": True,
-    },
+    extensions={"credProps": True},
 )
 ```
 
-When browser responses include extension results, they are parsed and exposed on the verified registration/authentication objects via `extensions`. If no extension data is present, the value remains `None` and existing callers are unaffected.
+**Read the result after verification:**
+
+```python
+verification = verify_registration_response(...)
+
+if verification.extensions and verification.extensions.cred_props is not None:
+    is_passkey = verification.extensions.cred_props.rk
+    print("Passkey created:", is_passkey)  # True / False / None
+```
+
+`verification.extensions` is `None` when the browser returns no recognised extension data, so existing callers are completely unaffected.
+
+Other extension keys passed in `extensions` are forwarded to the browser unchanged but are not parsed on response. Future extensions can be added to the library without any breaking changes.
+
+
 
 Two additional helper methods are also exposed:
 

@@ -36,13 +36,10 @@ extension_registration_options = generate_registration_options(
     rp_name="Example Co",
     user_name="extension-user",
     extensions={
+        # Request credProps (spec §10.4): input is just True.
+        # The browser returns {"rk": true/false/null} telling you whether
+        # the created credential is a passkey (client-side discoverable).
         "credProps": True,
-        "credProtect": {"credentialProtectionPolicy": 3},
-        "uvm": True,
-        "largeBlob": {"supported": True},
-        "hmac-secret": {"enabled": True},
-        "prf": {"enabled": True},
-        "appid": True,
     },
 )
 
@@ -95,9 +92,16 @@ registration_verification = verify_registration_response(
     expected_rp_id="localhost",
     require_user_verification=True,
 )
-
-print("\n[Registration Verification - None]")
+print("\n[Registration Verification]")
 print(registration_verification)
+
+if registration_verification.extensions is not None:
+    ext = registration_verification.extensions
+    if ext.cred_props is not None:
+        # True  = passkey (client-side discoverable)
+        # False = server-side credential
+        # None  = browser could not determine discoverability
+        print("  credProps.rk (is passkey?):", ext.cred_props.rk)
 assert registration_verification.credential_id == base64url_to_bytes(
     "ZoIKP1JQvKdrYj1bTUPJ2eTUsbLeFkv-X5xJQNr4k6s"
 )

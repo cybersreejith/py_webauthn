@@ -6,6 +6,7 @@ from webauthn.helpers.structs import (
     PublicKeyCredentialRequestOptions,
     UserVerificationRequirement,
 )
+from webauthn.extensions.api import normalize_extension_inputs
 
 
 def generate_authentication_options(
@@ -50,5 +51,5 @@ def generate_authentication_options(
         timeout=timeout,
         allow_credentials=allow_credentials,
         user_verification=user_verification,
-        extensions=extensions,
+        extensions=normalize_extension_inputs(extensions),
     )

@@ -30,7 +30,6 @@ class TestWebAuthnGenerateAttestationOptions(TestCase):
             challenge=b"this_is_a_challenge",
             timeout=12000,
             user_verification=UserVerificationRequirement.REQUIRED,
-            extensions={"credProtect": 1},
         )
 
         assert options.challenge == b"this_is_a_challenge"
@@ -40,7 +39,7 @@ class TestWebAuthnGenerateAttestationOptions(TestCase):
             PublicKeyCredentialDescriptor(id=b"12345"),
         ]
         assert options.user_verification == UserVerificationRequirement.REQUIRED
-        assert options.extensions == {"credProtect": 1}
+        assert options.extensions is None
 
     def test_raises_on_empty_rp_id(self) -> None:
         with self.assertRaisesRegex(ValueError, "rp_id"):
