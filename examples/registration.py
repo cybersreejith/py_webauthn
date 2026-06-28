@@ -4,6 +4,7 @@ from webauthn import (
     options_to_json,
     base64url_to_bytes,
 )
+from webauthn.extensions import CredPropsExtension
 from webauthn.helpers.cose import COSEAlgorithmIdentifier
 from webauthn.helpers.structs import (
     AttestationConveyancePreference,
@@ -35,12 +36,13 @@ extension_registration_options = generate_registration_options(
     rp_id="example.com",
     rp_name="Example Co",
     user_name="extension-user",
-    extensions={
-        # Request credProps (spec §10.4): input is just True.
-        # The browser returns {"rk": true/false/null} telling you whether
-        # the created credential is a passkey (client-side discoverable).
-        "credProps": True,
-    },
+    extensions=[
+        # CredPropsExtension() requests credProps (spec §10.4).
+        # The library sends {"credProps": true} to the browser automatically.
+        # The browser returns {"rk": true/false/null} which the library parses
+        # into verification.extensions.cred_props.rk after verify_registration_response().
+        CredPropsExtension(),
+    ],
 )
 
 print("\n[Registration Options - Extensions]")

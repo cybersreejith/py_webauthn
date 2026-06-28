@@ -1,15 +1,33 @@
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional, Union
 
 
-def normalize_extension_inputs(raw: Optional[Dict[str, Any]]) -> Optional[Dict[str, Any]]:
-    """Pass extension inputs through unchanged.
+def build_extension_inputs(
+    extensions: Optional[Union[List[Any], Dict[str, Any]]],
+) -> Optional[Dict[str, Any]]:
+    """Convert extension inputs into the raw dict format for browsers.
 
-    `credProps` input is simply the boolean ``True`` per spec §10.4 — no
-    normalization is required.  This function exists as an extension point so
-    future extensions that need server-side normalization can be handled here
-    without touching the option generators.
+    Accepts either:
+
+    **List of extension objects** (preferred, type-safe)::
+
+        extensions=[CredPropsExtension()]
+
+    **Raw dict** (for edge cases)::
+
+        extensions={"credProps": True}
+
+    Returns: ``None`` if no extensions, otherwise a dict of ``{ext_id: input_value}``.
     """
-    if not raw:
+    if extensions is None:
         return None
-    return dict(raw)
+
+    if isinstance(extensions, list):
+        if not extensions:
+            return None
+        return {ext.extension_id: ext.input_value() for ext in extensions}
+
+    if isinstance(extensions, dict):
+        return dict(extensions) if extensions else None
+
+    raise TypeError("extensions must be a list of extension objects or a dict")
 

@@ -8,8 +8,10 @@ from .authentication.verify_authentication_response import (
 )
 from .helpers import base64url_to_bytes, options_to_json
 from .extensions import (
+    build_extension_inputs,
+    CredPropsExtension,
+    CredPropsOutput,
     ClientExtensionResults,
-    CredentialPropertiesOutput,
     parse_client_extension_results,
 )
 
@@ -22,7 +24,9 @@ __all__ = [
     "verify_authentication_response",
     "base64url_to_bytes",
     "options_to_json",
+    "build_extension_inputs",
+    "CredPropsExtension",
+    "CredPropsOutput",
     "ClientExtensionResults",
-    "CredentialPropertiesOutput",
     "parse_client_extension_results",
 ]

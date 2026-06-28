@@ -3,7 +3,9 @@ from unittest import TestCase
 
 from webauthn.extensions import (
     ClientExtensionResults,
-    CredentialPropertiesOutput,
+    CredPropsExtension,
+    CredPropsOutput,
+    build_extension_inputs,
     parse_client_extension_results,
 )
 from webauthn.helpers.exceptions import InvalidExtensionResults
@@ -11,12 +13,35 @@ from webauthn.helpers.parse_authentication_credential_json import parse_authenti
 from webauthn.helpers.parse_registration_credential_json import parse_registration_credential_json
 
 
-class TestWebAuthnExtensions(TestCase):
-    # ------------------------------------------------------------------ #
-    # Raw browser credential JSON preserves clientExtensionResults         #
-    # ------------------------------------------------------------------ #
+class TestCredPropsExtensionInput(TestCase):
+    """CredPropsExtension builds the correct input for the option generators."""
 
-    def test_parse_registration_credential_preserves_client_extension_results(self) -> None:
+    def test_extension_id(self) -> None:
+        self.assertEqual(CredPropsExtension().extension_id, "credProps")
+
+    def test_input_value_is_true(self) -> None:
+        # Spec §10.4: client extension input is simply True
+        self.assertTrue(CredPropsExtension().input_value())
+
+    def test_build_extension_inputs_from_list(self) -> None:
+        result = build_extension_inputs([CredPropsExtension()])
+        self.assertEqual(result, {"credProps": True})
+
+    def test_build_extension_inputs_from_dict_passthrough(self) -> None:
+        result = build_extension_inputs({"credProps": True})
+        self.assertEqual(result, {"credProps": True})
+
+    def test_build_extension_inputs_none(self) -> None:
+        self.assertIsNone(build_extension_inputs(None))
+
+    def test_build_extension_inputs_empty_list(self) -> None:
+        self.assertIsNone(build_extension_inputs([]))
+
+
+class TestCredPropsOutput(TestCase):
+    """Browser clientExtensionResults are preserved and parseable."""
+
+    def test_parse_registration_credential_preserves_raw_results(self) -> None:
         credential = parse_registration_credential_json(
             {
                 "id": "credential-id",
@@ -34,8 +59,7 @@ class TestWebAuthnExtensions(TestCase):
             {"credProps": {"rk": True}},
         )
 
-    def test_parse_authentication_credential_preserves_client_extension_results(self) -> None:
-        # credProps is registration-only in practice but the raw field is preserved regardless
+    def test_parse_authentication_credential_preserves_raw_results(self) -> None:
         credential = parse_authentication_credential_json(
             {
                 "id": "credential-id",
@@ -54,42 +78,36 @@ class TestWebAuthnExtensions(TestCase):
             {"credProps": {"rk": True}},
         )
 
-    # ------------------------------------------------------------------ #
-    # credProps parsing (spec §10.4)                                        #
-    # ------------------------------------------------------------------ #
-
-    def test_cred_props_rk_true(self) -> None:
-        """Discoverable (passkey) credential."""
+    def test_rk_true_passkey(self) -> None:
         result = parse_client_extension_results({"credProps": {"rk": True}})
-        self.assertEqual(result, ClientExtensionResults(cred_props=CredentialPropertiesOutput(rk=True)))
+        self.assertEqual(result, ClientExtensionResults(cred_props=CredPropsOutput(rk=True)))
 
-    def test_cred_props_rk_false(self) -> None:
-        """Server-side credential."""
+    def test_rk_false_server_side(self) -> None:
         result = parse_client_extension_results({"credProps": {"rk": False}})
-        self.assertEqual(result, ClientExtensionResults(cred_props=CredentialPropertiesOutput(rk=False)))
+        self.assertEqual(result, ClientExtensionResults(cred_props=CredPropsOutput(rk=False)))
 
-    def test_cred_props_rk_absent(self) -> None:
-        """Browser omits rk when it cannot determine discoverability."""
+    def test_rk_absent_unknown(self) -> None:
+        # Browser omits rk when it cannot determine discoverability (spec §10.4 note)
         result = parse_client_extension_results({"credProps": {}})
-        self.assertEqual(result, ClientExtensionResults(cred_props=CredentialPropertiesOutput(rk=None)))
+        self.assertEqual(result, ClientExtensionResults(cred_props=CredPropsOutput(rk=None)))
 
-    def test_cred_props_invalid_rk_type(self) -> None:
+    def test_invalid_rk_type_raises(self) -> None:
         with self.assertRaisesRegex(InvalidExtensionResults, re.escape("credProps.rk must be a boolean")):
             parse_client_extension_results({"credProps": {"rk": "yes"}})
 
-    # ------------------------------------------------------------------ #
-    # Edge cases                                                            #
-    # ------------------------------------------------------------------ #
 
-    def test_returns_none_for_empty_input(self) -> None:
+class TestParserForwardCompatibility(TestCase):
+    """Unrecognised extension keys are silently ignored so the library stays
+    compatible with future browser extensions without requiring a new release."""
+
+    def test_returns_none_for_empty_or_none(self) -> None:
         self.assertIsNone(parse_client_extension_results({}))
         self.assertIsNone(parse_client_extension_results(None))
 
-    def test_returns_none_for_unrecognized_extensions(self) -> None:
-        """Unknown extension keys are silently ignored; future extensions can be added
-        to the parser without breaking existing callers.
-        """
+    def test_unknown_extensions_are_ignored(self) -> None:
+        # These will be supported in future but must not raise today
         self.assertIsNone(parse_client_extension_results({"uvm": [[2, 4, 2]]}))
         self.assertIsNone(parse_client_extension_results({"largeBlob": {"supported": True}}))
+        self.assertIsNone(parse_client_extension_results({"hmac-secret": {"enabled": True}}))
         self.assertIsNone(parse_client_extension_results({"appid": True}))
         self.assertIsNone(parse_client_extension_results({"unexpected": True}))

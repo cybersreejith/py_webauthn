@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import Any, Dict, List, Optional, Union
 
 from webauthn.helpers import generate_challenge, generate_user_handle, byteslike_to_bytes
 from webauthn.helpers.cose import COSEAlgorithmIdentifier
@@ -13,7 +13,7 @@ from webauthn.helpers.structs import (
     ResidentKeyRequirement,
     PublicKeyCredentialHint,
 )
-from webauthn.extensions.api import normalize_extension_inputs
+from webauthn.extensions.api import build_extension_inputs
 
 
 def _generate_pub_key_cred_params(
@@ -55,7 +55,7 @@ def generate_registration_options(
     exclude_credentials: Optional[List[PublicKeyCredentialDescriptor]] = None,
     supported_pub_key_algs: Optional[List[COSEAlgorithmIdentifier]] = None,
     hints: Optional[List[PublicKeyCredentialHint]] = None,
-    extensions: Optional[dict] = None,
+    extensions: Optional[Union[List, Dict[str, Any]]] = None,
 ) -> PublicKeyCredentialCreationOptions:
     """Generate options for registering a credential via navigator.credentials.create()
 
@@ -71,7 +71,9 @@ def generate_registration_options(
         (optional) `authenticator_selection`: Require certain characteristics about an authenticator, like attachment, support for resident keys, user verification, etc...
         (optional) `exclude_credentials`: A list of credentials the user has previously registered so that they cannot re-register them.
         (optional) `supported_pub_key_algs`: A list of public key algorithm IDs the RP chooses to restrict support to. Defaults to all supported algorithm IDs.
-        (optional) `extensions`: WebAuthn extension values to include in the registration options payload.
+        (optional) `extensions`: WebAuthn extensions to request. Pass a list of
+            :class:`~webauthn.extensions.WebAuthnExtensionInput` subclasses (e.g.
+            ``[CredPropsExtension()]``) or a raw dict for advanced use.
 
     Returns:
         Registration options ready for the browser. Consider using `helpers.options_to_json()` in this library to quickly convert the options to JSON.
@@ -129,7 +131,7 @@ def generate_registration_options(
         exclude_credentials=exclude_credentials,
         attestation=attestation,
         hints=hints,
-        extensions=normalize_extension_inputs(extensions),
+        extensions=build_extension_inputs(extensions),
     )
 
     ########

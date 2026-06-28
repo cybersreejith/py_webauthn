@@ -1,21 +1,15 @@
 from dataclasses import dataclass
 from typing import Optional
 
-
-@dataclass
-class CredentialPropertiesOutput:
-    """Output of the credProps extension (registration only, spec §10.4).
-
-    `rk` is:
-    - True  — credential is a client-side discoverable credential (passkey)
-    - False — credential is a server-side credential
-    - None  — browser could not determine discoverability
-    """
-
-    rk: Optional[bool] = None
+from .cred_props import CredPropsOutput
 
 
 @dataclass
 class ClientExtensionResults:
-    cred_props: Optional[CredentialPropertiesOutput] = None
+
+    cred_props: Optional[CredPropsOutput] = None
+
+    # Future fields go here, e.g.:
+    # uvm: Optional[List[UvmOutput]] = None
+    # large_blob: Optional[LargeBlobOutput] = None
 

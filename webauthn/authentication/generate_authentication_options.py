@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import Any, Dict, List, Optional, Union
 
 from webauthn.helpers import generate_challenge
 from webauthn.helpers.structs import (
@@ -6,7 +6,7 @@ from webauthn.helpers.structs import (
     PublicKeyCredentialRequestOptions,
     UserVerificationRequirement,
 )
-from webauthn.extensions.api import normalize_extension_inputs
+from webauthn.extensions.api import build_extension_inputs
 
 
 def generate_authentication_options(
@@ -16,7 +16,7 @@ def generate_authentication_options(
     timeout: int = 60000,
     allow_credentials: Optional[List[PublicKeyCredentialDescriptor]] = None,
     user_verification: UserVerificationRequirement = UserVerificationRequirement.PREFERRED,
-    extensions: Optional[dict] = None,
+    extensions: Optional[Union[List, Dict[str, Any]]] = None,
 ) -> PublicKeyCredentialRequestOptions:
     """Generate options for retrieving a credential via navigator.credentials.get()
 
@@ -51,5 +51,5 @@ def generate_authentication_options(
         timeout=timeout,
         allow_credentials=allow_credentials,
         user_verification=user_verification,
-        extensions=normalize_extension_inputs(extensions),
+        extensions=build_extension_inputs(extensions),
     )
